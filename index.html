@@ -262,7 +262,7 @@ function buildFreezedClass(name, fields){
 function buildFreezedModel(root){
   let out = `import 'package:freezed_annotation/freezed_annotation.dart';\npart 'models.freezed.dart';\npart 'models.g.dart';\n\n`;
   out += `@JsonSerializable(explicitToJson: true)\n`;
-  Object.keys(classes).reverse().forEach(c=>{
+  Object.keys(classes).forEach(c=>{
     out += buildFreezedClass(c, classes[c]);
   });
   return out;
@@ -281,7 +281,7 @@ $('#generate').click(()=>{
     if(fmt === 'freezed'){
       code = buildFreezedModel(root);
     } else {
-      Object.keys(classes).reverse().forEach(c=>{
+      Object.keys(classes).forEach(c=>{
         code+=buildClass(c,classes[c]);
       });
       if(isArray){
