@@ -272,13 +272,62 @@ function buildFreezedClass(name, fields) {
 }
 
 function buildFreezedModel(root) {
-  let out = `import 'package:freezed_annotation/freezed_annotation.dart';\npart 'models.freezed.dart';\npart 'models.g.dart';\n\n`;
-  out += `@JsonSerializable(explicitToJson: true)\n`;
+  const base = toSnake(root || "models");
+  let out = `import 'package:freezed_annotation/freezed_annotation.dart';\npart '${base}.freezed.dart';\npart '${base}.g.dart';\n\n`;
+  // Freezed generates the @JsonSerializable annotation for the generated
+  // private classes, so we must NOT emit @JsonSerializable here — that would
+  // be redundant and could interfere with Freezed's configuration.
   Object.keys(classes).forEach((c) => {
     out += buildFreezedClass(c, classes[c]);
   });
   return out;
 }
+
+// Update and toggle the "Freezed usage" help panel
+function updateFreezedHelp(rootName) {
+  const name = (rootName || "RootModel").trim() || "RootModel";
+  const base = toSnake(name || "root_model");
+  const filename = base + ".dart";
+
+  // update displayed class name + import/filename placeholders
+  $("#freezedRootExample, #freezedRootInline").text(name);
+  $("#freezedFilename").text(filename);
+  $("#freezedPartFreezed").text(`part '${base}.freezed.dart'`);
+  $("#freezedPartG").text(`part '${base}.g.dart'`);
+  $("#freezedImportFilename").text(filename);
+
+  // keep download filename in sync
+  $("#downloadBtn").data("filename", filename).attr("title", filename);
+}
+
+// derive a safe filename (snake_case) and map format -> filename
+function toSnake(s) {
+  return (
+    (s || "root_model")
+      .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+      .replace(/[^a-zA-Z0-9_]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .toLowerCase() || "root_model"
+  );
+}
+function filenameFor(root, fmt) {
+  return toSnake(root || "root_model") + ".dart";
+}
+
+$("#outputFormat").on("change", function () {
+  if ($(this).val() === "freezed") {
+    $("#freezedHelp").show();
+    updateFreezedHelp($("#rootClass").val() || "RootModel");
+  } else {
+    $("#freezedHelp").hide();
+  }
+});
+
+// live-update help/filenames when the root class name changes
+$("#rootClass").on("input", function () {
+  const root = $(this).val() || "RootModel";
+  updateFreezedHelp(root);
+});
 
 $("#generate").click(() => {
   try {
@@ -302,7 +351,22 @@ $("#generate").click(() => {
     }
 
     $("#output").text(code);
-    $("#copyBtn").prop("disabled", !code.trim());
+    const hasCode = !!code.trim();
+    $("#copyBtn").prop("disabled", !hasCode);
+
+    // auto-name output file and enable download when there's generated code
+    const filename = filenameFor(root, fmt);
+    $("#downloadBtn")
+      .prop("disabled", !hasCode)
+      .data("filename", filename)
+      .attr("title", filename);
+
+    if (fmt === "freezed" && hasCode) {
+      $("#freezedHelp").show();
+      updateFreezedHelp(root);
+    } else {
+      $("#freezedHelp").hide();
+    }
   } catch (e) {
     alert("Invalid JSON");
   }
@@ -331,3 +395,50 @@ $("#copyBtn").click(async function () {
     ta.remove();
   }
 });
+
+// Download generated code as a .dart file
+$("#downloadBtn").click(function () {
+  const text = $("#output").text();
+  if (!text.trim()) return;
+  const filename = $(this).data("filename") || "root_model.dart";
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+// Copy install/build commands from the Freezed help panel
+$("#copyInstallBtn").click(async function () {
+  const cmds = `flutter pub add freezed_annotation json_annotation
+flutter pub add --dev build_runner freezed json_serializable
+flutter pub run build_runner build --delete-conflicting-outputs`;
+  try {
+    await navigator.clipboard.writeText(cmds);
+    const $b = $(this);
+    const orig = $b.text();
+    $b.text("Copied!");
+    setTimeout(() => $b.text(orig), 1500);
+  } catch (err) {
+    const ta = document.createElement("textarea");
+    ta.value = cmds;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+    } catch (e) {
+      alert("Copy failed");
+    }
+    ta.remove();
+  }
+});
+
+// initialize download button state
+$("#downloadBtn").prop("disabled", true);
+
+// ensure help panel matches selected format on load
+$("#outputFormat").trigger("change");

@@ -32,9 +32,41 @@ textarea,pre{background:#020617!important;color:#e5e5e6}
     <div class="col-md-8">
       <div class="d-flex justify-content-between align-items-center mb-1">
         <label class="mb-0">Generated Dart Models</label>
-        <button class="btn btn-outline-secondary btn-sm" id="copyBtn" aria-label="Copy generated code" disabled>Copy</button>
+        <div>
+          <button class="btn btn-outline-secondary btn-sm me-2" id="downloadBtn" aria-label="Download generated code" disabled>Download .dart</button>
+          <button class="btn btn-outline-secondary btn-sm" id="copyBtn" aria-label="Copy generated code" disabled>Copy</button>
+        </div>
       </div>
       <pre id="output" class="p-3" style="height:800px;overflow:auto"></pre>
+
+      <div id="freezedHelp" class="card bg-dark text-light mt-3" style="display:none;">
+        <div class="card-body">
+          <h5 class="card-title">Freezed + json_serializable — install &amp; usage</h5>
+          <div class="d-flex align-items-start mb-1">
+            <div>
+              <strong>Install packages</strong> <small class="text-muted">(run in your project root)</small>:
+              <pre class="small mt-1 mb-0"><code>flutter pub add freezed_annotation json_annotation
+flutter pub add --dev build_runner freezed json_serializable</code></pre>
+            </div>
+            <div class="ms-3">
+              <button id="copyInstallBtn" class="btn btn-sm btn-outline-light" title="Copy install & build commands">Copy</button>
+            </div>
+          </div>
+
+          <ol class="small mb-2" style="line-height:1.5">
+            <li><strong>Save</strong> the generated code to <code id="freezedFilename">models.dart</code>. It will include <code id="freezedPartFreezed">part 'models.freezed.dart'</code> and <code id="freezedPartG">part 'models.g.dart'</code>.</li>
+            <li><strong>Generate</strong> the supporting files:
+              <pre class="small mb-0"><code>flutter pub run build_runner build --delete-conflicting-outputs</code></pre>
+            </li>
+            <li><strong>Use</strong> the model in your code:
+              <pre class="small"><code>import '<span id="freezedImportFilename">models.dart</span>';
+final obj = <span id="freezedRootInline">RootModel</span>.fromJson(yourJsonMap);</code></pre>
+            </li>
+          </ol>
+
+          <p class="mb-0 text-muted small">Tip: run build_runner in <code>watch</code> mode for continuous updates: <code>flutter pub run build_runner watch</code></p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
