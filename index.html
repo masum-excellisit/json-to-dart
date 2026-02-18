@@ -158,6 +158,10 @@ function buildClass(name,fields){
         if(['String','int','double','bool','dynamic','DateTime'].includes(inner)){
           if(inner==='DateTime'){
             out+=`      ${f.name}: (${expr})!=null ? List.from(${expr}).map((e)=> e!=null ? DateTime.parse(e.toString()) : null).toList() : null,\n`;
+          } else if(inner==='double'){
+            out+=`      ${f.name}: (${expr})!=null ? List.from(${expr}).map((e)=> (e as num?)?.toDouble()).toList() : null,\n`;
+          } else if(inner==='int'){
+            out+=`      ${f.name}: (${expr})!=null ? List.from(${expr}).map((e)=> (e as num?)?.toInt()).toList() : null,\n`;
           } else {
             out+=`      ${f.name}: (${expr})!=null ? List<${inner}>.from(${expr}) : null,\n`;
           }
@@ -166,6 +170,10 @@ function buildClass(name,fields){
         }
       } else if(classes[f.type]){
         out+=`      ${f.name}: (${expr})!=null ? ${f.type}.fromJson(${expr}) : null,\n`;
+      } else if(f.type==='double'){
+        out+=`      ${f.name}: ((${expr}) as num?)?.toDouble(),\n`;
+      } else if(f.type==='int'){
+        out+=`      ${f.name}: ((${expr}) as num?)?.toInt(),\n`;
       } else {
         out+=`      ${f.name}: ${expr},\n`;
       }
@@ -183,6 +191,10 @@ function buildClass(name,fields){
       if(['String','int','double','bool','dynamic','DateTime'].includes(inner)){
         if(inner==='DateTime'){
           out+=`      ${f.name}: json['${f.key}']!=null ? List.from(json['${f.key}']).map((e)=> e!=null ? DateTime.parse(e.toString()) : null).toList() : null,\n`;
+        } else if(inner==='double'){
+          out+=`      ${f.name}: json['${f.key}']!=null ? List.from(json['${f.key}']).map((e)=> (e as num?)?.toDouble()).toList() : null,\n`;
+        } else if(inner==='int'){
+          out+=`      ${f.name}: json['${f.key}']!=null ? List.from(json['${f.key}']).map((e)=> (e as num?)?.toInt()).toList() : null,\n`;
         } else {
           out+=`      ${f.name}: json['${f.key}']!=null ? List<${inner}>.from(json['${f.key}']) : null,\n`;
         }
@@ -191,6 +203,10 @@ function buildClass(name,fields){
       }
     } else if(classes[f.type]){
       out+=`      ${f.name}: json['${f.key}']!=null ? ${f.type}.fromJson(json['${f.key}']) : null,\n`;
+    } else if(f.type==='double'){
+      out+=`      ${f.name}: (json['${f.key}'] as num?)?.toDouble(),\n`;
+    } else if(f.type==='int'){
+      out+=`      ${f.name}: (json['${f.key}'] as num?)?.toInt(),\n`;
     } else {
       out+=`      ${f.name}: json['${f.key}'],\n`;
     }
