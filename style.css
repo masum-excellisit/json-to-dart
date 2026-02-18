@@ -1,0 +1,168 @@
+:root {
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #020617;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --border-color: #334155;
+  --accent-color: #f59e0b;
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+h2 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #fff;
+}
+
+/* Custom Card Styling */
+.card-custom {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Inputs & Textareas */
+.form-control, .form-select {
+  background-color: var(--bg-input) !important;
+  border: 1px solid var(--border-color);
+  color: var(--text-main) !important;
+  border-radius: 8px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+#jsonInput {
+  font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #a5b4fc; /* Light indigo for JSON keys/strings */
+}
+
+/* Output Code Block */
+#output {
+  background-color: #020617;
+  color: #a5b4fc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'Fira Code', Menlo, Monaco, 'Courier New', monospace;
+  font-size: 0.9rem;
+  /* Custom Scrollbar for code block */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-input);
+}
+
+#output::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+#output::-webkit-scrollbar-track {
+  background: var(--bg-input);
+}
+#output::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-outline-secondary {
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+.btn-outline-secondary:hover {
+  background-color: var(--border-color);
+  color: #fff;
+}
+
+.btn-outline-secondary:disabled {
+  border-color: #1e293b;
+  color: #475569;
+}
+
+/* Freezed Help Panel */
+#freezedHelp {
+  border: 1px solid rgba(245, 158, 11, 0.3); /* Amber accent */
+  background: rgba(245, 158, 11, 0.05);
+}
+
+#freezedHelp .card-title {
+  color: var(--accent-color);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#freezedHelp code {
+  color: #fcd34d;
+}
+
+/* Labels */
+label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+/* Utility */
+.gap-2 { gap: 0.75rem !important; }
+.mt-2 { margin-top: 0.75rem !important; }
+.p-4 { padding: 2rem !important; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #output {
+    height: 400px !important;
+  }
+}
+
+.text-warning {
+  color: #f59e0b !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+#jsonInput {
+  background-color: var(--bg-input);
+  color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  border-color: var(--border-color);
+  resize: none;
+}
+#jsonInput:focus {
+  border-color: var(--primary-color);
+  color: #e2e8f0;
+}
+
+.card-custom {
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+}

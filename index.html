@@ -4,73 +4,92 @@
 <meta charset="UTF-8" />
 <title>Pro JSON → Dart Model</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-<style>
-body{background:#0f172a;color:#e5e7eb}
-textarea,pre{background:#020617!important;color:#e5e5e6}
-#jsonInput{font-family:Menlo,Monaco,'Courier New',monospace;font-size:0.875rem; color:#b9bcc2}
-</style>
+<link href="style.css" rel="stylesheet" />
 </head>
 <body class="p-4">
-<div class="container">
+<div class="container-fluid">
   <h2 class="mb-3">JSON → Dart Model</h2>
   <div class="row">
     <div class="col-md-4">
-      <label class="mb-1">Paste API JSON</label>
-      <textarea id="jsonInput" class="form-control" rows="15"></textarea>
-      <input id="rootClass" class="form-control mt-2" placeholder="Root class name (e.g UserResponse)" />
-      <div class="d-flex gap-2 mt-2 align-items-center">
-        <label class="mb-0 me-2">Output:</label>
-        <select id="outputFormat" class="form-select w-auto">
-          <option value="plain" selected>Plain Dart (fromJson/toJson)</option>
-          <option value="freezed">freezed + json_serializable</option>
-        </select>
-      </div>
-      <div class="d-grid gap-2 mt-2">
-        <button class="btn btn-primary" id="generate">Generate Dart</button>
+      <div class="card card-custom p-3 bg-dark h-100">
+        <label class="mb-2 text-warning fw-bold">Input JSON</label>
+        <textarea id="jsonInput" class="form-control mb-3" rows="18" placeholder="{ ... }"></textarea>
+        
+        <label class="text-light mb-1">Root Class Name</label>
+        <input id="rootClass" class="form-control mb-3" placeholder="e.g. UserResponse" />
+        
+        <div class="mb-3">
+          <label class="text-light mb-1">Output Format</label>
+          <select id="outputFormat" class="form-select">
+            <option value="plain" selected>Plain Dart</option>
+            <option value="freezed">Freezed + json_serializable</option>
+          </select>
+        </div>
+        
+        <div class="d-grid gap-2 mt-4">
+          <button class="btn btn-primary" id="generate">Generate Dart</button>
+        </div>
       </div>
     </div>
     <div class="col-md-8">
-      <div class="d-flex justify-content-between align-items-center mb-1">
-        <label class="mb-0">Generated Dart Models</label>
-        <div>
-          <button class="btn btn-outline-secondary btn-sm me-2" id="downloadBtn" aria-label="Download generated code" disabled>Download .dart</button>
-          <button class="btn btn-outline-secondary btn-sm" id="copyBtn" aria-label="Copy generated code" disabled>Copy</button>
+      <div class="card card-custom p-0 overflow-hidden">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom border-secondary">
+           <span class="text-light fw-bold">Generated Dart Code</span>
+           <div>
+             <button class="btn btn-sm btn-outline-warning me-2" id="downloadBtn" disabled>
+               <i class="bi bi-download"></i> Download .dart
+             </button>
+             <button class="btn btn-sm btn-outline-info" id="copyBtn" disabled>
+               <i class="bi bi-clipboard"></i> Copy
+             </button>
+           </div>
         </div>
+        <pre id="output" class="p-3 m-0 bg-black border-0 rounded-0" style="height: 600px; overflow: auto;"></pre>
       </div>
-      <pre id="output" class="p-3" style="height:800px;overflow:auto"></pre>
 
-      <div id="freezedHelp" class="card bg-dark text-light mt-3" style="display:none;">
-        <div class="card-body">
-          <h5 class="card-title">Freezed + json_serializable — install &amp; usage</h5>
-          <div class="d-flex align-items-start mb-1">
-            <div>
-              <strong>Install packages</strong> <small class="text-muted">(run in your project root)</small>:
-              <pre class="small mt-1 mb-0"><code>flutter pub add freezed_annotation json_annotation
-flutter pub add --dev build_runner freezed json_serializable</code></pre>
+      <div id="freezedHelp" class="card bg-dark text-light mt-3 border-warning" style="display:none;">
+          <div class="card-header bg-warning-subtle text-warning-emphasis fw-bold">
+            <i class="bi bi-info-circle-fill me-2"></i> Freezed + json_serializable
+          </div>
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="text-light-emphasis small text-uppercase fw-bold">Install</span>
+              <button id="copyInstallBtn" class="btn btn-sm btn-outline-warning" title="Copy install commands">
+                <i class="bi bi-clipboard"></i> Copy
+              </button>
             </div>
-            <div class="ms-3">
-              <button id="copyInstallBtn" class="btn btn-sm btn-outline-light" title="Copy install & build commands">Copy</button>
+            <div class="bg-black p-2 rounded mb-3 border border-secondary shadow-sm">
+              <code class="text-info d-block mb-1">flutter pub add freezed_annotation json_annotation</code>
+              <code class="text-info d-block mb-1">flutter pub add --dev build_runner freezed json_serializable</code>
+            </div>
+            
+            <div class="d-flex align-items-center justify-content-between mb-2">
+               <span class="text-light-emphasis small text-uppercase fw-bold">Build & Watch</span>
+            </div>
+            <div class="bg-black p-2 rounded mb-3 border border-secondary shadow-sm">
+              <code class="text-secondary d-block"># One-time build:</code>
+              <code class="text-success d-block mb-2">flutter pub run build_runner build --delete-conflicting-outputs</code>
+              <code class="text-secondary d-block"># Watch for changes:</code>
+              <code class="text-success d-block">flutter pub run build_runner watch</code>
+            </div>
+
+            <div class="alert alert-dark border-secondary mb-0">
+               <strong class="text-warning">Next Steps:</strong>
+               <ol class="mb-0 mt-2 ps-3 small text-light-emphasis" style="line-height:1.6">
+                 <li>Save as <code class="text-info" id="freezedFilename">models.dart</code></li>
+                 <li>Includes <code class="text-info" id="freezedPartFreezed">part '...'</code> and <code class="text-info" id="freezedPartG">part '...'</code> automatically.</li>
+                 <li>Import: <code class="text-info">import '<span id="freezedImportFilename">models.dart</span>';</code></li>
+                 <li>Usage: <code class="text-white"><span id="freezedRootInline">Root</span>.fromJson(json)</code></li>
+               </ol>
             </div>
           </div>
-
-          <ol class="small mb-2" style="line-height:1.5">
-            <li><strong>Save</strong> the generated code to <code id="freezedFilename">models.dart</code>. It will include <code id="freezedPartFreezed">part 'models.freezed.dart'</code> and <code id="freezedPartG">part 'models.g.dart'</code>.</li>
-            <li><strong>Generate</strong> the supporting files:
-              <pre class="small mb-0"><code>flutter pub run build_runner build --delete-conflicting-outputs</code></pre>
-            </li>
-            <li><strong>Use</strong> the model in your code:
-              <pre class="small"><code>import '<span id="freezedImportFilename">models.dart</span>';
-final obj = <span id="freezedRootInline">RootModel</span>.fromJson(yourJsonMap);</code></pre>
-            </li>
-          </ol>
-
-          <p class="mb-0 text-muted small">Tip: run build_runner in <code>watch</code> mode for continuous updates: <code>flutter pub run build_runner watch</code></p>
-        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="generator.js"></script>
 </body>

@@ -415,10 +415,10 @@ $("#downloadBtn").click(function () {
 // Copy install/build commands from the Freezed help panel
 $("#copyInstallBtn").click(async function () {
   const cmds = `flutter pub add freezed_annotation json_annotation
-flutter pub add --dev build_runner freezed json_serializable
-flutter pub run build_runner build --delete-conflicting-outputs`;
+flutter pub add --dev build_runner freezed json_serializable`;
   try {
     await navigator.clipboard.writeText(cmds);
+
     const $b = $(this);
     const orig = $b.text();
     $b.text("Copied!");
